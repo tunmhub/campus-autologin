@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.campus.dxautologin"
+    android:versionCode="2"
+    android:versionName="1.1.0">
+
+    <!-- targetSdkVersion 设为 28：使鸿蒙 4.2 允许应用在检测到宿舍 DX-WLAN 信号时自动从 GD-WLAN 切换过去 -->
+    <uses-sdk
+        android:minSdkVersion="26"
+        android:targetSdkVersion="28" />
+
+    <!-- 网络检测与 Portal 登录权限 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+
+    <!-- Wi-Fi 扫描与自动从 GD-WLAN 切换到 DX-WLAN 所需权限 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!-- 后台自动监听与开机自启权限 -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="DX校园网登录"
+        android:usesCleartextTraffic="true"
+        android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+
+        <!-- 1. 主界面：账号密码配置、自动抢切 DX 开关、保活设置与运行日志查看 -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="DX校园网设置"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- 2. 透明无弹窗静默触发入口：供鸿蒙“智慧场景”或快捷方式调用 -->
+        <activity
+            android:name=".SilentLoginActivity"
+            android:exported="true"
+            android:label="DX静默登录"
+            android:theme="@android:style/Theme.NoDisplay"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity="">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="com.campus.dxautologin.ACTION_SILENT_LOGIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- 3. 全场景后台监听服务 -->
+        <service
+            android:name=".WifiMonitorService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- 4. 下拉控制中心快捷磁贴 -->
+        <service
+            android:name=".QuickLoginTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_tile"
+            android:label="DX校园网"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!-- 5. 开机与覆盖安装自启广播 -->
+        <receiver
+            android:name=".BootCompletedReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+</manifest>

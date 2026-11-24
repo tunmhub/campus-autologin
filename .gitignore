@@ -1,0 +1,10 @@
+# 本地个人敏感配置与运行日志（绝不上传至 Git 仓库）
+config.ps1
+logs/
+*个人自用版*.apk
+*.idsig
+
+# Android 编译中间产物与本地签名密钥
+android-app/build/
+android-app/*.jks
+android-app/DXAutoLogin.apk
